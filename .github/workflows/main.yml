@@ -1,5 +1,5 @@
 name: Push-to-EC2
-# Trigger deployment only on push to master branch
+
 on:
   push:
     branches:
@@ -12,12 +12,18 @@ jobs:
 
     steps:
       - name: Checkout the files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # o v3 si quieres la última versión
 
       - name: Deploy to Server 1
         uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST_DNS }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }} # Clave privada SSH (¡DIRECTAMENTE en 'with'!)
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}      # Host o IP
+          REMOTE_USER: ${{ secrets.USERNAME }}       # Usuario SSH
+          TARGET: ${{ secrets.TARGET_DIR }}       # Directorio destino en EC2
+          # Opcional: Script para ejecutar en el servidor (en lugar de TARGET)
+          # script: |
+          #   ssh -i ~/.ssh/id_rsa ubuntu@ec2-13-58-224-172.us-east-2.compute.amazonaws.com
+          #   cd /var/www/html
+          #   git pull origin main
+          #   # ... otros comandos ...
